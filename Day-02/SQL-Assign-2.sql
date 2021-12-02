@@ -170,15 +170,8 @@ HAVING SUM(ISNULL(od.Quantity, 0)) > 100
 SELECT 
 	su.CompanyName AS [Supplier Company Name],
 	sh.CompanyName AS [Shipping Company Name]
-FROM Orders o 
-JOIN [Order Details] od 
-ON o.OrderID = od.OrderID
-JOIN Products p 
-ON p.ProductID = od.ProductID 
-JOIN Suppliers su  
-ON p.SupplierID = su.SupplierID 
-JOIN Shippers sh  
-ON o.ShipVia = sh.ShipperID
+FROM Suppliers su   
+CROSS JOIN Shippers sh  
 
 
 -- 24. Display the products order each day. Show Order date and Product Name.
