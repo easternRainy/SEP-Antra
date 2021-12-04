@@ -13,7 +13,8 @@ INTERSECT (
 SELECT DISTINCT City
 FROM Customers
 WHERE City NOT IN (
-	SELECT City FROM Employees
+	SELECT DISTINCT City FROM Employees
+	WHERE City IS NOT NULL
 )
 
 ---- (b) Do not use Sub Query
@@ -45,16 +46,26 @@ GROUP BY c.City
 
 
 ---- (a) use UNION ?
-
+SELECT City 
+FROM Customers 
+EXCEPT (
+	SELECT City  
+	FROM Customers  
+	GROUP BY City  
+	HAVING COUNT(*) = 1
+	UNION (
+		SELECT City 
+		FROM Customers 
+		GROUP BY City 
+		HAVING COUNT(*) = 0
+	)
+)
 
 ---- (b) Use SubQuery
-SELECT City
-FROM (
-	SELECT City, COUNT(CustomerID) AS NumCus
-	FROM Customers
-	GROUP BY City
-) AS tmp
-WHERE NumCus >= 2
+SELECT City 
+FROM Customers 
+GROUP BY City 
+HAVING COUNT(*) >= 2
 
 -- 6. List all Customer Cities that have ordered at least two different kinds of products.
 
@@ -81,6 +92,28 @@ WHERE c.City != o.ShipCity
 
 
 -- 8. List 5 most popular products, their average price, and the customer city that ordered most quantity of it.
+--- a. not use CTE
+SELECT TOP 5  
+	ProductID,
+	AVG(UnitPrice) AS AvgPrice, 
+	(	
+		SELECT TOP 1 City 
+		FROM Customers c  
+		JOIN Orders o 
+		ON o.CustoemrID = c.CustomerID 
+		JOIN [Order Details] od2 
+		ON od2.OrderID = o.OrderID  
+		WHERE od2.ProducID = od1.ProductID  
+		GROUP BY City 
+		ORDER BY SUM(Quantity) DESC
+
+	) AS City
+FROM [Order Details] od1 
+GROPU BY ProductID
+ORDER BY Sum(Quantity) DESC
+
+
+--- b. use CTE
 WITH join_table AS (
 	SELECT DISTINCT
 		od.ProductID, p.ProductName, p.UnitPrice, o.CustomerID, c.City
@@ -129,43 +162,56 @@ ORDER BY pc.PdtCount DESC
 
 -- 9. List all cities that have never ordered something but we have employees there.
 
-		--
-
-WITH join_table AS (
-	SELECT od.ProductID, p.ProductName, p.UnitPrice, o.CustomerID, c.City
-	FROM [Order Details] od
-	JOIN [Orders] o
-	ON od.OrderID = o.OrderID
-	JOIN [Customers] c
-	ON c.CustomerID = o.CustomerID
-	JOIN Products p 
-	ON p.ProductID = od.ProductID
-),
-
-CityNoOrder AS (
-	SELECT t.TerritoryID, t.TerritoryDescription AS City
-	FROM Territories t
-	WHERE t.TerritoryDescription NOT IN (
-		SELECT City FROM join_table
-	)
+--- a. not use CTE
+SELECT DISTINCT City  
+FROM Employees 
+WHERE City NOT IN (
+	SELECT ShipCity FROM Orders 
+	WHERE ShipCity IS NOT NULL
 )
 
-SELECT City
-FROM CityNoOrder
-WHERE TerritoryID IN (
-	SELECT TerritoryID FROM EmployeeTerritories
-)
+---
 
+SELECT DISTINCT City 
+FROM Customers  
+WHERE City IS NOT NULL 
+EXCEPT (
+	SELECT DISTINCT ShipCity 
+	FROM Orders  
+	WHERE ShipCity IS NOT NULL
+)
 
 
 -- 10. List one city, if exists, that is the city from where the employee sold most orders (not the product quantity) is, and also the city of most total quantity of products ordered from. 
 -- ?
 
-SELECT * FROM join_table
+SELECT  
+	(	
+		SELECT TOP 1 City 
+		FROM Orders o 
+		JOIN [Order Details] od  
+		ON o.OrderID = od.OrderID  
+		JOIN Employees e  
+		ON e.EmployeeID = o.EmployeeID  
+		GROUP BY e.EmployeeID, e.City 
+		ORDER BY COUNT(*) DESC
+	) AS MostOrderedCity,
+	(
+		SELECT TOP 1 City 
+		FROM Orders o 
+		JOIN [Order Details] od  
+		ON o.OrderID = od.OrderID  
+		JOIN Employees e  
+		ON e.EmployeeID = o.EmployeeID  
+		GROUP BY e.EmployeeID, e.City 
+		ORDER BY SUM(Quantity) DESC
+
+	) AS MostQuantitySoldCity
 
 -- 11. How do you remove the duplicates record of a table?
 
 ---- Use SELECT DISTINCT 
+---- Use GROUP BY and COUNT(*) if COUNT(*) > 1 then delete the rows using sub query
 
 
 -- 12.  Find employees who do not manage anybody.
@@ -177,6 +223,19 @@ WHERE empid NOT IN (
 )
 
 -- 13. Find departments that have maximum number of employees.
+
+-- not use CTE
+SELECT deptid  
+FROM Employee  
+GROUP BY deptid 
+HAVING COUNT(*) = (
+	SELECT TOP 1 COUNT(*)
+	FROM Employee 
+	GROUP BY deptid 
+	ORDER BY COUNT(*) DESC
+)
+
+-- use CTE
 WITH join_table AS (
 	SELECT
 		d.deptid, d.deptname, e.empid
