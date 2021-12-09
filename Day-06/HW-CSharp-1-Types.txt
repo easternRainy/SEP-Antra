@@ -1,0 +1,34 @@
+1. 
+What type would you choose for the following "numbers"?
+- A person’s telephone number: String
+- A person’s height: float
+- A person’s age: int
+- A person’s gender (Male, Female, Prefer Not To Answer): enum
+- A person’s salary: decimal
+- A book’s ISBN: String
+- A book’s price: decimal
+- A book’s shipping weight: float
+- A country’s population: ulong
+- The number of stars in the universe: ulong
+- The number of employees in each of the small or medium businesses in the United Kingdom (up to about 50,000 employees per business): ushort
+
+2. 
+What are the difference between value type and reference type variables? 
+- Value type will directly hold the value while reference type will hold the memory address for this value
+- Value type will be stored in stack memory while reference type will be stored in the heap memory
+- Value type will not be collected by the garbage collector while reference type will be.
+- Value type can be created by Struct or Enum. Reference will be constructed by Class, Interface, Delete, Array, etc.
+- Value type cannot be null while reference type can accept null values
+
+What is boxing and unboxing?
+- Boxing is the process to convert a value type to reference type
+- Unboxing is the process to convert a reference typle to value type
+
+3.
+What is meant by the terms managed resource and unmanaged resource in .NET
+- Managed resources are managed by Grabage collector
+- Unmanaged resources needs explicity release when we finish using them
+
+4.
+Whats the purpose of Garbage Collector in .NET?
+- Garbage Collector is an automatic memory manager that manage objects on heap so that the coders do not need to manually release memory
