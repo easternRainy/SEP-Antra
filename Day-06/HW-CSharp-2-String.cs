@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Text;
+using System.Linq;
 
 namespace StringDemos
 {
@@ -16,9 +18,9 @@ namespace StringDemos
             // ProtocolParse("ftp://www.example.com/employee");
             // ProtocolParse("ftp://www.example.com/employee");
             // ProtocolParse("www.apple.com");
-            // ExtractPalin("Hi,exe? ABBA! Hog fully a string: ExE. Bob");
+            ExtractPalin("Hi,exe? ABBA! Hog fully a string: ExE. Bob");
 
-            ReverseSen("The quick brown fox jumps over the lazy dog /Yes! Really!!!/.");
+            // ReverseSen("The quick brown fox jumps over the lazy dog /Yes! Really!!!/.");
 
 
         }
@@ -44,8 +46,39 @@ namespace StringDemos
         {
             
             char[] delims = {' ', '.', ',', ':', ';', '=', '(', ')', '&', '[', ']', '\"', '\'', '\\', '/', '!', '?'};
-            String[] splits = sentence.Split(delims);
-            System.Console.WriteLine(String.Join("----", splits));
+            String[] splits = sentence.Split(delims, System.StringSplitOptions.RemoveEmptyEntries);
+            Array.Reverse(splits);
+            // System.Console.WriteLine(String.Join("----", splits));
+            StringBuilder sb = new StringBuilder();
+            bool flag = ( delims.Contains(sentence[0]) );
+            int index = 0;
+
+            foreach (char c in sentence)
+            {
+                if (delims.Contains(c))
+                {
+                    if (flag == true)
+                    {
+                        sb.Append(splits[index]);
+                        sb.Append(c);
+                        index += 1;
+                        flag = false;
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                        flag = false;
+                    }
+                }
+                else
+                {
+                    flag = true;
+                }
+            }
+
+            System.Console.WriteLine(sentence);
+            System.Console.WriteLine(sb.ToString());
+
             
         }
 
@@ -53,31 +86,43 @@ namespace StringDemos
         static void ExtractPalin(String str)
         {
             ArrayList palindromes = new ArrayList();
-            Stack stack = new Stack();
-            
-            foreach(char c in str)
+            char[] delims = {' ', '.', ',', ':', ';', '=', '(', ')', '&', '[', ']', '\"', '\'', '\\', '/', '!', '?'};
+            String[] splits = str.Split(delims, System.StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (String s in splits)
             {
-                if (Char.IsLetter(c))
+                if (IsPalindrome(s) && palindromes.Contains(s) == false)
                 {
-                    if (stack.Count == 0)
-                    {
-                        stack.Push(c);
-                        displayStack(stack);
-                    }
-                    else
-                    {
-                        char topChar = (char)stack.Pop();
-
-
-                    }
-                    
+                    palindromes.Add(s);
                 }
-                else
-                {
-                    stack.Clear();
-                }
-                
             }
+
+            String[] ans = palindromes.ToArray(typeof(String)) as String[];
+            Array.Sort(ans);
+            System.Console.WriteLine(String.Join(", ", ans));
+        }
+
+        static bool IsPalindrome(String s)
+        {
+            if (s.Length == 0)
+            {
+                return true;
+            }
+
+            int left = 0;
+            int right = s.Length - 1;
+
+            while (left <= right)
+            {
+                if (s[left] != s[right])
+                {
+                    return false;
+                }
+                left += 1;
+                right -= 1;
+            }
+
+            return true;
         }
 
         static void displayStack(Stack stack)
