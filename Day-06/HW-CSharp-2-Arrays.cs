@@ -11,9 +11,17 @@ namespace ArrayDemo
             // int[] primes = FindPrimesInRange(2, 100);
             //ManageList();
 
-            int[] arr = {7,7,7,0,2,2,2,0,10,10,10};
-            int max_num = MostFreqNum(arr);
-            System.Console.WriteLine(max_num);
+            // int[] arr = {7,7,7,0,2,2,2,0,10,10,10};
+            // int max_num = MostFreqNum(arr);
+            // System.Console.WriteLine(max_num);
+
+            // int[] arr = {2,1,1,2,3,3,2,2,2,1};
+            // LongestSubseq(arr);
+
+            int[] arr = {3, 2, 4, -1};
+            RotateArray(arr, 2);
+
+
         }
 
         // Q1
@@ -115,12 +123,88 @@ namespace ArrayDemo
 
 
         // Q4
-        static void RotateArray()
+        static void RotateArray(int[] arr, int k)
         {
+            int n = arr.Length;
+            int[] sum = new int[n];
+            int[] prev = arr;
+            int[] rotate;
 
+            for (int i = 0; i < k; i++) 
+            {
+                rotate = RotateOnce(prev);
+                
+                Console.WriteLine(String.Join(" ", rotate));
+
+                for (int j = 0; j < n; j++)
+                {
+                    sum[j] += rotate[j];
+                }
+
+                prev = rotate;
+            }
+
+            Console.WriteLine(String.Join(" ", sum));
+        }
+
+        static int[] RotateOnce(int[] arr) 
+        {
+            int n = arr.Length;
+            int[] newArr = new int[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                if (i == 0)
+                {
+                    newArr[i] = arr[n-1];
+                }
+                else
+                {
+                    newArr[i] = arr[i-1];
+                }
+            }
+
+            return newArr;
         }
 
         // Q5
+        static void LongestSubseq(int[] arr)
+        {
+            int currNum = int.MinValue;
+            int currFreq = int.MinValue;
+            int maxNum = int.MinValue;
+            int maxFreq = int.MinValue;
+
+            foreach (int num in arr)
+            {
+                if (num != currNum) {
+                    currNum = num;
+                    currFreq = 1;
+                }
+                else
+                {
+                    currFreq += 1;
+                    if (currFreq > maxFreq)
+                    {
+                        maxFreq = currFreq;
+                        maxNum = num;
+                    }
+                }
+            }
+
+            for (int i = 0; i < maxFreq; i++)
+            {
+                if ( i != maxFreq - 1)
+                {
+                    Console.Write(maxNum + " ");
+                }
+                else
+                {
+                    Console.WriteLine(maxNum);
+                }
+                
+            }
+        }
 
 
         // Q7
