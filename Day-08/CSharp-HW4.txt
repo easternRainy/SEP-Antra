@@ -1,0 +1,57 @@
+1.
+Describe the problem generics address.
+- Generics allows us to design classes and methods but defer the specification of types until the class or method is declared or called
+
+2.
+How would you create a list of strings, using the generic List class?
+List<String> strs = new List<String>();
+
+3.
+How many generic type parameters does the Dictionary class have?
+- Two KeyType and ValueType
+
+4.
+When a generic class has multiple type parameters, they must all match.
+- True
+
+5.
+What method is used to add items to a List object?
+- Add
+
+6.
+Name two methods that cause items to be removed from a List.
+- Remove
+- RemoveAll
+- RemoveAt
+
+7.
+How do you indicate that a class has a generic type parameter?
+
+- class MyClass<T>
+
+8.
+Generic classes can only have one generic type parameter.
+- False
+
+9.
+Generic type constraints limit what can be used for the generic type.
+- True
+
+10.
+Constraints let you use the methods of the thing you are constraining to.
+- True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
